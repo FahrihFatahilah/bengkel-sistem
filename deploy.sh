@@ -6,10 +6,10 @@ FIRST_DEPLOY=false
 
 echo "🚀 Deploying Bengkel..."
 
-if [ ! -f .env ]; then
-    echo "❌ File .env tidak ditemukan!"
-    exit 1
-fi
+# if [ ! -f .env ]; then
+#     echo "❌ File .env tidak ditemukan!"
+#     exit 1
+# fi
 
 if ! docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER}$"; then
     FIRST_DEPLOY=true
