@@ -4,24 +4,16 @@ set -e
 CONTAINER="bengkel-app"
 FIRST_DEPLOY=false
 
-cd "$(dirname "$0")"
-
-echo "🚀 Deploying Bengkel App..."
+echo "🚀 Deploying Bengkel..."
 
 if [ ! -f .env ]; then
-    echo "❌ File .env tidak ditemukan di $(pwd)!"
-    echo "💡 Buat file .env terlebih dahulu: cp .env.example .env"
+    echo "❌ File .env tidak ditemukan!"
     exit 1
 fi
 
 if ! docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER}$"; then
     FIRST_DEPLOY=true
     echo "📦 First deploy detected"
-fi
-
-if ! docker network inspect proxy &>/dev/null; then
-    echo "🌐 Creating external network 'proxy'..."
-    docker network create proxy
 fi
 
 echo "🔨 Building app image..."
@@ -31,7 +23,7 @@ echo "▶️  Starting container..."
 docker compose up -d
 
 echo "⏳ Waiting for container..."
-sleep 5
+sleep 3
 
 echo "🗄️  Running migrations..."
 docker exec $CONTAINER php artisan migrate --force
@@ -47,5 +39,6 @@ echo "⚡ Caching..."
 docker exec $CONTAINER php artisan config:cache
 docker exec $CONTAINER php artisan route:cache
 docker exec $CONTAINER php artisan view:cache
+docker exec $CONTAINER php artisan storage:link
 
 echo "✅ Deploy selesai! https://bengkel.ffatahilah.my.id"
